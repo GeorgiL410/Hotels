@@ -1,0 +1,27 @@
+{
+  "name": "hotels",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.17.1",
+    "express-handlebars": "^5.2.0",
+    "mongoose": "^5.11.16",
+    "nodemon": "^2.0.7"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "nodemon ./index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GeorgiL410/Hotels.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GeorgiL410/Hotels/issues"
+  },
+  "homepage": "https://github.com/GeorgiL410/Hotels#readme"
+}
