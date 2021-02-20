@@ -3,14 +3,19 @@ const hotelSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
+    minlength: 4,
   },
   city: {
     type: String,
     required: true,
+    minlength: 3,
+
   },
   freeRooms: {
     type: Number,
     required: true,
+    min: 1,
+    max: 100,
   },
   imageUrl: {
     type: String,

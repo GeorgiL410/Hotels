@@ -1,10 +1,7 @@
 const router = require('express').Router();
-const jwt = require('jsonwebtoken');
 const auth = require('../middlewares/auth');
 const hotelService = require('../services/hotelService');
 const isAuth = require('../middlewares/isAuth');
-
-const { COOKIE_NAME, SECRET } = require('../config/config')
 
 router.get('/', auth, (req, res) => {
   let hotels = hotelService.findAll()
@@ -18,31 +15,62 @@ router.get('/', auth, (req, res) => {
 router.get('/hotels/create', (req, res) => {
   res.render('create');
 })
-router.post('/hotels/create', auth, (req, res) => {
+router.post('/hotels/create', auth, async (req, res, next) => {
   let { name, city, freeRooms, imageUrl } = req.body;
   try {
     let creator = res.locals.user._id;
 
-    hotelService.create({ name, city, freeRooms, imageUrl, creator });
+    await hotelService.create({ name, city, freeRooms, imageUrl, creator });
   }
-  catch {
-    console.log('error');
+  catch (err) {
+    next()
   }
   res.redirect('/');
 })
 
-router.get('/hotels/:hotelId/details',isAuth, auth, (req, res) => {
+router.get('/hotels/:hotelId/details', isAuth, auth, (req, res) => {
   let currentUser = res.locals.user._id;
 
   hotelService.findOne(req.params.hotelId)
     .then(hotel => {
       let bookings = hotel.bookings;
-      console.log(bookings);
       let hasBooked = bookings.includes(currentUser);
       let isCreator = currentUser == hotel.creator;
       res.render('details', { hotel, isCreator, hasBooked });
     })
+    .catch((err) => console.log(err));
 })
 
+router.get('/hotels/:hotelId/book', auth, async (req, res) => {
+  let currentUser = res.locals.user._id;
+
+  await hotelService.findOne(req.params.hotelId)
+    .then(hotel => {
+      hotelService.updateBookings(hotel._id, currentUser);
+    })
+    .then(x => res.redirect(`/hotels/${req.params.hotelId}/details`))
+    .catch(err => console.log(err));
+})
+router.get('/hotels/:hotelId/delete', auth, (req, res) => {
+  hotelService.findOne(req.params.hotelId)
+    .then(hotel => {
+      hotelService.deleteHotel(hotel._id);
+    })
+    .then(x => res.redirect(`/`))
+    .catch(err => console.log(err));
+});
+
+router.get('/hotels/:hotelId/edit', (req, res) => {
+  hotelService.findOne(req.params.hotelId)
+    .then(hotel => {
+      res.render('edit', hotel);
+    });
+})
+
+router.post('/hotels/:hotelId/edit', (req, res) => {
+  console.log(req.body);
+  hotelService.updateHotel(req.params.hotelId, req.body)
+  res.redirect(`/hotels/${req.params.hotelId}/details`);
+});
 
 module.exports = router;

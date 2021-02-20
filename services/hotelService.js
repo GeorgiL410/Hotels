@@ -12,15 +12,29 @@ const findAll = async function () {
 }
 
 const findOne = async function (id) {
-  let hotel = await Hotel.findOne({_id: id}).lean();
+  let hotel = await Hotel.findOne({ _id: id }).lean();
 
   return hotel;
 }
 
+const updateBookings = async function (hotelId, bookerId) {
+  let hotel = await Hotel.findOne({ _id: hotelId });
+  hotel.bookings.push(bookerId);
+  return hotel.save();
+};
+const deleteHotel = async function (hotelId) {
+ return await Hotel.deleteOne({_id: hotelId});
+};
 
+const updateHotel =  async function (hotelId, data) {
+  return hotel = await Hotel.updateOne({ _id: hotelId }, data);
+};
 
 module.exports = {
   create,
   findAll,
   findOne,
+  updateBookings,
+  deleteHotel,
+  updateHotel,
 };
