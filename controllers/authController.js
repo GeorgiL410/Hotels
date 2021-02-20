@@ -1,8 +1,9 @@
 const router = require('express').Router();
 const authService = require('../services/authService');
-const {COOKIE_NAME} = require('../config/config');
-// const { body, validationResult } = require('express-validator');
+const { COOKIE_NAME } = require('../config/config');
+const auth = require('../middlewares/auth');
 router.get('/', (req, res) => {
+
   res.render('home');
 });
 
@@ -18,13 +19,18 @@ router.post('/register',
     //todo: check pass match
     authService.register(email, username, password)
       .then(createdUser => {
-        res.redirect('/auth/login');
+        authService.login(username, password)
+          .then(token => {
+            res.cookie(COOKIE_NAME, token, { httpOnly: true });
+            res.redirect('/')
+
+          })
       })
       .catch(next);
 
   });
 
-router.post('/login', (req, res, next) => {
+router.post('/login', auth, (req, res, next) => {
   const { username, password } = req.body;
   authService.login(username, password)
     .then(token => {

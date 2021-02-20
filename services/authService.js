@@ -5,7 +5,6 @@ const {SECRET} = require('../config/config');
 
 const register = (email, username, password) => {
   let user = new User({ email, username, password });
-  console.log(user);
   return user.save();
 }
 const login = async (username, password) => {
@@ -18,7 +17,7 @@ const login = async (username, password) => {
   if (!isCorrect) {
     throw { message: 'Invalid password', status: 404 };
   }
-let token = jwt.sign({_id: user._id, username: user.username}, SECRET);
+let token = jwt.sign({_id: user._id, username: user.username, isAuth: true}, SECRET);
 return token;
 };
 
